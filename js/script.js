@@ -27,7 +27,7 @@
  * Para descobrir seu número formatado acesse:
  *   https://wa.me/SEU_NUMERO  (substitua SEU_NUMERO pelo número)
  */
-const WA_NUMERO  = '5583999952801';   // ← ALTERE AQUI
+const WA_NUMERO  = '5583981234567';   // ← ALTERE AQUI
 const WA_MENSAGEM = 'Olá! Vim pelo Simulador Tributário PF vs PJ e gostaria de saber mais sobre abertura de CNPJ.';
 
 // ============================================================
@@ -819,11 +819,11 @@ function toggleTheme() {
 function trocarLogos(tema) {
   // Header e CTA: sempre branca (fundos escuros/teal)
   document.querySelectorAll('.header-logo, .cta-logo').forEach(img => {
-    img.src = 'exito-logo-branco.png';
+    img.src = 'assets/exito-logo-branco.png';
   });
 
   // Modal e footer: azul no claro, branca no escuro
-  const srcAlt = tema === 'light' ? 'exito-logo-azul.png' : 'exito-logo-branco.png';
+  const srcAlt = tema === 'light' ? 'assets/exito-logo-azul.png' : 'assets/exito-logo-branco.png';
   document.querySelectorAll('.modal-logo, .footer-logo').forEach(img => {
     img.src = srcAlt;
   });

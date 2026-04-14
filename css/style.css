@@ -39,7 +39,7 @@
   --modal-bg:     #163545;
 
   /* Logo: usar versão BRANCA no dark */
-  --logo-src-header: url('exito-logo-branco.png');
+  --logo-src-header: url('../assets/exito-logo-branco.png');
 }
 
 /* ---------------------------------------------------------
@@ -78,7 +78,7 @@
   --modal-bg:     #ffffff;
 
   /* Logo: usar versão AZUL no light */
-  --logo-src-header: url('exito-logo-azul.png');
+  --logo-src-header: url('../assets/exito-logo-azul.png');
 }
 
 /* ---------------------------------------------------------
