@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulador Tributário PF vs PJ · Êxito Contábil</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <div class="header-inner">
+
+      <!-- Logo em maior destaque -->
+      <a class="logo-link" href="#">
+        <img src="exito-logo-branco.png" alt="Êxito Contábil" class="header-logo" id="headerLogo" />
+      </a>
+
+      <div class="header-center">
+        <span class="header-title">Simulador Tributário</span>
+        <span class="header-sub">PF · Autônomo vs PJ · Simples Nacional · 2026</span>
+      </div>
+
+      <div class="header-right">
+        <!-- Botão tema claro/escuro -->
+        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Alternar tema">
+          <span class="theme-icon-dark">🌙</span>
+          <span class="theme-icon-light">☀️</span>
+          <span class="theme-label-dark">Modo Claro</span>
+          <span class="theme-label-light">Modo Escuro</span>
+        </button>
+
+        <div class="header-badge">
+          <span class="badge-dot"></span>
+          Tempo real
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ===== HERO ===== -->
+  <div class="hero">
+    <h1 class="hero-title">Pessoa Física <span class="vs">vs</span> Pessoa Jurídica</h1>
+    <p class="hero-sub">Descubra qual regime tributário é mais vantajoso para o seu negócio — e o impacto da Reforma Tributária.</p>
+  </div>
+
+  <!-- ===== MAIN ===== -->
+  <main class="main-container">
+
+    <div class="tabs-wrapper">
+      <nav class="tabs-nav" role="tablist">
+        <button class="tab-btn active" data-tab="atual" role="tab">
+          <span class="tab-icon">📊</span> Cenário Atual
+        </button>
+        <button class="tab-btn" data-tab="reforma" role="tab">
+          <span class="tab-icon">⚡</span> Reforma Tributária
+        </button>
+      </nav>
+
+      <!-- ====== ABA 1 — CENÁRIO ATUAL ====== -->
+      <section class="tab-panel active" id="tab-atual" role="tabpanel">
+        <div class="panel-layout">
+
+          <!-- FORMULÁRIO -->
+          <aside class="form-column">
+            <div class="form-card">
+              <h2 class="form-title"><span>📋</span> Dados da Simulação</h2>
+
+              <!-- Receita -->
+              <div class="field-group">
+                <label class="field-label">Receita Mensal Bruta <span class="req">*</span></label>
+                <div class="input-wrap prefix">
+                  <span class="affix">R$</span>
+                  <input type="number" id="receita" class="field-input" placeholder="10.000,00" min="0" step="100" required />
+                </div>
+              </div>
+
+              <!-- Despesas -->
+              <div class="field-group">
+                <label class="field-label">Despesas Mensais Dedutíveis <span class="opt">(opcional)</span></label>
+                <div class="input-wrap prefix">
+                  <span class="affix">R$</span>
+                  <input type="number" id="despesas" class="field-input" placeholder="0,00" min="0" step="100" />
+                </div>
+                <p class="field-hint">Reduz a base de cálculo do IRPF.</p>
+              </div>
+
+              <!-- ISS — PF sempre serviço -->
+              <div class="field-group">
+                <label class="field-label">ISS — Alíquota Municipal (%)</label>
+                <div class="input-wrap suffix">
+                  <input type="number" id="iss" class="field-input" value="5" min="2" max="5" step="0.5" />
+                  <span class="affix">%</span>
+                </div>
+                <p class="field-hint">Autônomo presta serviços — ISS varia de 2% a 5% conforme o município. João Pessoa: 5%.</p>
+              </div>
+
+              <!-- Separador PJ -->
+              <div class="form-section-title">Configuração PJ — Simples Nacional</div>
+
+              <!-- Pró-labore -->
+              <div class="field-group">
+                <label class="checkbox-opt">
+                  <input type="checkbox" id="temProLabore" checked />
+                  <span class="check-box"></span>
+                  Calcular Pró-labore do Sócio
+                </label>
+
+                <div id="prolaboreField" class="prolabore-field">
+                  <div class="input-wrap prefix" style="margin-top:10px">
+                    <span class="affix">R$</span>
+                    <input type="number" id="prolabore" class="field-input" value="1621" min="1621" step="100" />
+                  </div>
+                  <p class="field-hint">Mínimo: R$ 1.621,00 (salário mínimo 2026). INSS de 11% é recolhido sobre este valor.</p>
+
+                  <!-- Fator R -->
+                  <div class="fator-r-box" id="fatorRBox">
+                    <div class="fator-r-title">
+                      <span>⚖️</span> <strong>Fator R — Anexo III ou V?</strong>
+                    </div>
+                    <p class="fator-r-desc">
+                      O <strong>Fator R</strong> é a razão entre a <em>folha de salários dos últimos 12 meses</em> e a <em>receita bruta do mesmo período</em>.
+                      Se o resultado for <strong>≥ 28%</strong>, a empresa migra do Anexo V para o <strong>Anexo III</strong> (menor alíquota).
+                    </p>
+                    <div class="fator-r-calc">
+                      <span>Fator R = Pró-labore × 12 ÷ Receita × 12</span>
+                      <span id="fatorRValor" class="fator-r-valor">—</span>
+                    </div>
+                    <div class="fator-r-resultado" id="fatorRResultado"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Anexo Simples -->
+              <div class="field-group">
+                <label class="field-label">Anexo Simples Nacional</label>
+                <select id="anexo" class="field-select">
+                  <option value="III">Anexo III — Serviços (alíq. a partir de 6%)</option>
+                  <option value="V">Anexo V — Profissões regulamentadas (a partir de 15,5%)</option>
+                </select>
+                <p class="field-hint" id="anexoHint">Se o Fator R ≥ 28%, use Anexo III mesmo sendo profissão regulamentada.</p>
+              </div>
+
+              <!-- Custo contábil -->
+              <div class="field-group">
+                <label class="field-label">Honorários Contábeis Mensais</label>
+                <div class="input-wrap prefix">
+                  <span class="affix">R$</span>
+                  <input type="number" id="contabilidade" class="field-input" value="350" min="0" step="50" />
+                </div>
+              </div>
+
+              <button class="btn-calc" onclick="calcularCenarioAtual()">
+                <span>⚡</span> Calcular Simulação
+              </button>
+            </div>
+          </aside>
+
+          <!-- RESULTADOS -->
+          <div class="results-column">
+
+            <div class="results-grid" id="resultsGrid" style="display:none">
+
+              <!-- Card PF -->
+              <div class="result-card" id="cardPF">
+                <div class="card-head">
+                  <div>
+                    <div class="card-label">Pessoa Física</div>
+                    <div class="card-sub">Autônomo · Prestador de Serviços</div>
+                  </div>
+                  <div class="card-verdict" id="pf-verdict"></div>
+                </div>
+                <div class="card-body">
+                  <div class="tax-row">
+                    <span>INSS <span class="tax-detail">(20% s/ receita até teto)</span></span>
+                    <span id="pf-inss" class="mono">—</span>
+                  </div>
+                  <div class="tax-row">
+                    <span>ISS <span class="tax-detail" id="pf-iss-detail">(5% s/ receita)</span></span>
+                    <span id="pf-iss" class="mono">—</span>
+                  </div>
+                  <div class="tax-row">
+                    <span>IRPF <span class="tax-detail">(tabela progressiva)</span></span>
+                    <span id="pf-irpf" class="mono">—</span>
+                  </div>
+                  <div class="tax-divider"></div>
+                  <div class="tax-row total-row">
+                    <span>Total Impostos</span>
+                    <span id="pf-total" class="mono total-val">—</span>
+                  </div>
+                  <div class="tax-row">
+                    <span>Líquido estimado</span>
+                    <span id="pf-liquido" class="mono liq-val">—</span>
+                  </div>
+                  <div class="tax-row hint-row">
+                    <span>Carga tributária</span>
+                    <span id="pf-pct" class="mono">—</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card PJ -->
+              <div class="result-card" id="cardPJ">
+                <div class="card-head">
+                  <div>
+                    <div class="card-label">Pessoa Jurídica</div>
+                    <div class="card-sub" id="pj-card-sub">Simples Nacional · Anexo III</div>
+                  </div>
+                  <div class="card-verdict" id="pj-verdict"></div>
+                </div>
+                <div class="card-body">
+                  <div class="tax-row">
+                    <span>DAS <span class="tax-detail" id="pj-das-detail">(alíq. efetiva)</span></span>
+                    <span id="pj-das" class="mono">—</span>
+                  </div>
+                  <div class="tax-row">
+                    <span>INSS Pró-labore <span class="tax-detail">(11% s/ pró-labore)</span></span>
+                    <span id="pj-inss" class="mono">—</span>
+                  </div>
+                  <div class="tax-row">
+                    <span>Honorários Contábeis</span>
+                    <span id="pj-contabil" class="mono">—</span>
+                  </div>
+                  <div class="tax-divider"></div>
+                  <div class="tax-row total-row">
+                    <span>Total Custos</span>
+                    <span id="pj-total" class="mono total-val">—</span>
+                  </div>
+                  <div class="tax-row">
+                    <span>Líquido estimado</span>
+                    <span id="pj-liquido" class="mono liq-val">—</span>
+                  </div>
+                  <div class="tax-row hint-row">
+                    <span>Carga tributária</span>
+                    <span id="pj-pct" class="mono">—</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card Diferença -->
+              <div class="result-card card-diff" id="cardDiff">
+                <div class="card-head">
+                  <div class="card-label" style="color:var(--green)">Diferença · PF vs PJ</div>
+                </div>
+                <div class="card-body">
+                  <div class="diff-row">
+                    <span>Economia mensal</span>
+                    <span id="diff-mensal" class="mono diff-val">—</span>
+                  </div>
+                  <div class="diff-row">
+                    <span>Economia anual</span>
+                    <span id="diff-anual" class="mono diff-val-big">—</span>
+                  </div>
+                  <div class="diff-msg" id="diff-msg"></div>
+                </div>
+              </div>
+
+            </div><!-- /results-grid -->
+
+            <!-- Ponto de virada -->
+            <div class="pv-card" id="pontoViradaCard" style="display:none">
+              <span class="pv-icon">📍</span>
+              <div>
+                <strong>Ponto de Virada</strong>
+                <p id="pv-mensagem">—</p>
+              </div>
+            </div>
+
+            <!-- Gráfico -->
+            <div class="chart-card" id="chartCard" style="display:none">
+              <h3 class="chart-title">Carga Tributária por Faixa de Receita</h3>
+              <p class="chart-sub">PF × PJ — R$ 1.000 a R$ 30.000/mês</p>
+              <div class="chart-wrap"><canvas id="graficoComparativo"></canvas></div>
+            </div>
+
+            <!-- CTA -->
+            <div class="cta-card" id="ctaCard" style="display:none">
+              <div class="logo-dark-wrap">
+                <img src="exito-logo-branco.png" alt="Êxito Contábil" class="cta-logo" />
+              </div>
+              <div class="cta-text">
+                <strong>Pronto para abrir seu CNPJ?</strong>
+                <p>A Êxito Contábil cuida de todo o processo — abertura, enquadramento e gestão fiscal.</p>
+              </div>
+              <button class="btn-cta" onclick="abrirModalCNPJ()">Quero abrir meu CNPJ →</button>
+            </div>
+
+          </div><!-- /results-column -->
+        </div>
+      </section>
+
+      <!-- ====== ABA 2 — REFORMA TRIBUTÁRIA ====== -->
+      <section class="tab-panel" id="tab-reforma" role="tabpanel">
+        <div class="panel-layout">
+
+          <aside class="form-column">
+            <div class="form-card">
+              <h2 class="form-title"><span>⚡</span> Parâmetros da Reforma</h2>
+
+              <div class="reforma-info">
+                ⚠️ A Reforma Tributária (EC 132/2023) unifica tributos em <strong>IBS + CBS</strong>. Alíquotas definitivas ainda em regulamentação pelo Comitê Gestor.
+              </div>
+
+              <!-- Explicação da metodologia -->
+              <div class="metodologia-box">
+                <div class="metodologia-title">📐 Como o cálculo é feito</div>
+                <div class="metodologia-item">
+                  <span class="metodologia-label">Tributos substituídos (PJ):</span>
+                  <span class="metodologia-val">PIS + COFINS + ISS + ICMS → <strong>IBS + CBS</strong></span>
+                </div>
+                <div class="metodologia-item">
+                  <span class="metodologia-label">Base de cálculo:</span>
+                  <span class="metodologia-val">Receita bruta mensal informada na Aba 1</span>
+                </div>
+                <div class="metodologia-item">
+                  <span class="metodologia-label">Fórmula IBS+CBS:</span>
+                  <span class="metodologia-val mono-sm">Receita × Alíquota estimada</span>
+                </div>
+                <div class="metodologia-item">
+                  <span class="metodologia-label">INSS pró-labore:</span>
+                  <span class="metodologia-val">Mantido — 11% sobre pró-labore</span>
+                </div>
+                <div class="metodologia-item">
+                  <span class="metodologia-label">Contabilidade:</span>
+                  <span class="metodologia-val">Mantida conforme Aba 1</span>
+                </div>
+                <div class="metodologia-item">
+                  <span class="metodologia-label">PF (autônomo):</span>
+                  <span class="metodologia-val">Sem alteração no curto prazo — ISS e IRPF mantidos durante a transição (até 2033)</span>
+                </div>
+              </div>
+
+              <div class="field-group" style="margin-top:16px">
+                <label class="field-label">Alíquota IBS + CBS (estimada)</label>
+                <div class="input-wrap suffix">
+                  <input type="number" id="aliquotaReforma" class="field-input" value="26.5" min="20" max="35" step="0.5" />
+                  <span class="affix">%</span>
+                </div>
+                <p class="field-hint">Estimativa entre 25% e 28%. Governo projeta alíquota-padrão de 26,5%.</p>
+              </div>
+
+              <p class="field-hint" style="margin-top:6px;line-height:1.6">
+                Os demais dados (receita, pró-labore, contabilidade) são lidos automaticamente da Aba 1.
+              </p>
+
+              <button class="btn-calc btn-reforma" onclick="calcularCenarioReforma()">
+                <span>⚡</span> Simular Reforma
+              </button>
+            </div>
+          </aside>
+
+          <div class="results-column">
+
+            <div class="results-grid" id="resultsGridReforma" style="display:none">
+
+              <!-- Card PF Reforma -->
+              <div class="result-card" id="cardPFReforma">
+                <div class="card-head">
+                  <div>
+                    <div class="card-label">Pessoa Física</div>
+                    <div class="card-sub">Autônomo · Pós-Reforma</div>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="tax-row">
+                    <span>INSS <span class="tax-detail">(20% s/ receita)</span></span>
+                    <span id="pfr-inss" class="mono">—</span>
+                  </div>
+                  <div class="tax-row">
+                    <span>ISS <span class="tax-detail">(mantido na transição)</span></span>
+                    <span id="pfr-iss" class="mono">—</span>
+                  </div>
+                  <div class="tax-row">
+                    <span>IRPF <span class="tax-detail">(progressivo)</span></span>
+                    <span id="pfr-irpf" class="mono">—</span>
+                  </div>
+                  <div class="tax-divider"></div>
+                  <div class="tax-row total-row">
+                    <span>Total</span>
+                    <span id="pfr-total" class="mono total-val">—</span>
+                  </div>
+                  <div class="tax-row">
+                    <span>Líquido</span>
+                    <span id="pfr-liquido" class="mono liq-val">—</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card PJ Reforma -->
+              <div class="result-card" id="cardPJReforma">
+                <div class="card-head">
+                  <div>
+                    <div class="card-label">Pessoa Jurídica</div>
+                    <div class="card-sub">IBS + CBS · Pós-Reforma</div>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="tax-row">
+                    <span>IBS + CBS <span class="tax-detail" id="pjr-ibs-detail">(26,5% s/ receita)</span></span>
+                    <span id="pjr-ibs" class="mono">—</span>
+                  </div>
+                  <div class="tax-row">
+                    <span>INSS Pró-labore <span class="tax-detail">(11% mantido)</span></span>
+                    <span id="pjr-inss" class="mono">—</span>
+                  </div>
+                  <div class="tax-row">
+                    <span>Honorários Contábeis</span>
+                    <span id="pjr-contabil" class="mono">—</span>
+                  </div>
+                  <div class="tax-divider"></div>
+                  <div class="tax-row total-row">
+                    <span>Total</span>
+                    <span id="pjr-total" class="mono total-val">—</span>
+                  </div>
+                  <div class="tax-row">
+                    <span>Líquido</span>
+                    <span id="pjr-liquido" class="mono liq-val">—</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card Alerta Reforma -->
+              <div class="result-card card-alerta" id="cardAlertaReforma">
+                <div class="card-head">
+                  <div class="card-label" style="color:var(--amber)">⚠️ Impacto da Reforma</div>
+                </div>
+                <div class="card-body">
+                  <div class="alerta-row" id="alertaPJ"></div>
+                  <div class="alerta-row" id="alertaPF"></div>
+                  <div class="alerta-msg" id="alertaMsgReforma"></div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Gráfico Reforma -->
+            <div class="chart-card" id="chartCardReforma" style="display:none">
+              <h3 class="chart-title">Impacto da Reforma por Faixa de Receita</h3>
+              <p class="chart-sub">PJ Atual × PJ Pós-Reforma × PF · R$ 1.000 a R$ 30.000/mês</p>
+              <div class="chart-wrap"><canvas id="graficoReforma"></canvas></div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+    </div><!-- /tabs-wrapper -->
+  </main>
+
+  <!-- ===== MODAL CNPJ ===== -->
+  <div class="modal-overlay" id="modalCNPJ" style="display:none" onclick="fecharModal(event)">
+    <div class="modal-box">
+      <button class="modal-close" onclick="fecharModalDireto()">✕</button>
+      <div class="logo-dark-wrap modal-logo-wrap-el">
+        <img src="exito-logo-branco.png" alt="Êxito Contábil" class="modal-logo" id="modalLogo" />
+      </div>
+      <h2 class="modal-title">Abra seu CNPJ com a Êxito Contábil</h2>
+      <p class="modal-desc">Nosso time cuida de todo o processo — da abertura ao enquadramento tributário ideal para o seu perfil.</p>
+      <ul class="modal-list">
+        <li>✅ Abertura em até 5 dias úteis</li>
+        <li>✅ Análise do melhor regime tributário</li>
+        <li>✅ Emissão de NFS-e e obrigações acessórias</li>
+        <li>✅ Consultoria tributária inclusa no 1º mês</li>
+      </ul>
+      <a href="https://wa.me/5583981234567?text=Olá!%20Vim%20pelo%20Simulador%20Tributário%20e%20quero%20abrir%20meu%20CNPJ." target="_blank" class="btn-whatsapp">
+        📱 Falar no WhatsApp
+      </a>
+
+    </div>
+  </div>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="logo-dark-wrap footer-logo-wrap-el">
+      <img src="exito-logo-branco.png" alt="Êxito Contábil" class="footer-logo" id="footerLogo" />
+    </div>
+    <p>Simulação para fins informativos — estimativas baseadas na legislação vigente.</p>
+    <p>Consulte sempre um contador para decisões estratégicas.</p>
+    <p class="footer-crc">Êxito Contábil · CRC 011005/O-3 PB · Simulador Tributário v2.0 · 2026</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
